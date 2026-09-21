@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { Link } from '../router.jsx'
 import { useLang } from '../i18n.jsx'
-import { quizItems } from '../content/quiz.js'
+import { quizItems, shuffleOptions } from '../content/quiz.js'
 import { concepts } from '../content/concepts.js'
 import { addPoints, markGamePlayed, grantBadge } from '../progress.js'
 
@@ -29,7 +29,7 @@ export default function Quiz({ focusConceptId }) {
     }
     // adaptive-ish ordering: start medium, then mix easier/harder
     const sorted = [...pool].sort((a, b) => Math.abs(a.difficulty - 2) - Math.abs(b.difficulty - 2))
-    return shuffle(sorted).slice(0, 8)
+    return shuffle(sorted).slice(0, 8).map(shuffleOptions)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusConceptId, seed])
 

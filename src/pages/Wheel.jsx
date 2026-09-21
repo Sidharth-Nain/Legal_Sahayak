@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react'
 import { Link } from '../router.jsx'
 import { useLang } from '../i18n.jsx'
-import { quizItems } from '../content/quiz.js'
+import { quizItems, shuffleOptions } from '../content/quiz.js'
 import { concepts } from '../content/concepts.js'
 import { addPoints, markGamePlayed, grantBadge } from '../progress.js'
 
@@ -72,7 +72,8 @@ export default function Wheel() {
       return c && (c.wheelCategories || []).includes(cat)
     })
     if (!pool.length) pool = quizItems
-    setQ(pool[Math.floor(Math.random() * pool.length)])
+    const rawQ = pool[Math.floor(Math.random() * pool.length)]
+    setQ(shuffleOptions(rawQ))
   }
 
   const answer = (i) => {

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react'
 import { Link } from '../router.jsx'
 import { useLang } from '../i18n.jsx'
-import { quizItems } from '../content/quiz.js'
+import { quizItems, shuffleOptions } from '../content/quiz.js'
 import { addPoints, markGamePlayed } from '../progress.js'
 
 // 100-cell board (1..100). Special cells use constitutional themes.
@@ -77,8 +77,8 @@ export default function SnakeLadder() {
   }
 
   const askQuestion = (p, cell) => {
-    const q = qPool[Math.floor(Math.random() * qPool.length)]
-    setPendingQ({ q, p, cell })
+    const rawQ = qPool[Math.floor(Math.random() * qPool.length)]
+    setPendingQ({ q: shuffleOptions(rawQ), p, cell })
     setChosen(null)
   }
 
