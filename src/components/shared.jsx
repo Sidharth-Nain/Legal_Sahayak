@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useRoute } from '../router.jsx'
 import { useLang } from '../i18n.jsx'
 import { speak, stopSpeech } from '../speech.js'
+import { useAuth } from '../context/AuthContext.jsx'
+import { loadProgress } from '../progress.js'
 
 export function ChakraIcon({ size = 34 }) {
   return (
@@ -33,9 +35,34 @@ export function Watermark() {
 
 export function Header({ textsize, setTextsize }) {
   const { t, lang, setLang } = useLang()
+  const { user, openSignIn, logout } = useAuth()
   const route = useRoute()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [points, setPoints] = useState(() => loadProgress().points || 0)
+
+  // Listen to progress updates reactively
+  useEffect(() => {
+    const handleUpdate = (e) => {
+      setPoints(e.detail?.points ?? loadProgress().points ?? 0)
+    }
+    window.addEventListener('ls-progress-update', handleUpdate)
+    return () => window.removeEventListener('ls-progress-update', handleUpdate)
+  }, [])
+
+  // Close menu when route changes or clicking outside
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [route])
+
   const active = (path) => (route === path || route.startsWith(path + '/') ? 'active' : '')
   const cycle = () => setTextsize(textsize === 'base' ? 'lg' : textsize === 'lg' ? 'xl' : 'base')
+
+  const getInitials = (name) => {
+    if (!name) return 'C'
+    const parts = name.trim().split(' ')
+    return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0][0].toUpperCase()
+  }
+
   return (
     <header className="site-header">
       <div className="wrap bar">
@@ -60,6 +87,60 @@ export function Header({ textsize, setTextsize }) {
           >
             {lang === 'en' ? 'हिन्दी' : 'English'}
           </button>
+
+          {/* User Auth Section */}
+          {user ? (
+            <div className="user-menu-container">
+              <button
+                className="user-pill-btn"
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-expanded={menuOpen}
+                aria-label="User menu"
+              >
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="" className="user-avatar-img" />
+                ) : (
+                  <span className="user-avatar-initials">
+                    {getInitials(user.displayName)}
+                  </span>
+                )}
+                <span className="user-name-short">{user.displayName || 'Citizen'}</span>
+                <span className="user-points-badge">🏅 {points}</span>
+                <span className="user-menu-arrow">▾</span>
+              </button>
+
+              {menuOpen && (
+                <>
+                  <div className="user-menu-backdrop" onClick={() => setMenuOpen(false)} />
+                  <div className="user-dropdown-menu">
+                    <div className="user-dropdown-header">
+                      <strong>{user.displayName || 'Citizen'}</strong>
+                      <span className="user-dropdown-email">{user.email || (user.isAnonymous ? t('guest') : '')}</span>
+                    </div>
+                    <div className="user-dropdown-links">
+                      <Link to="/profile" className="user-dropdown-item" onClick={() => setMenuOpen(false)}>
+                        👤 {t('navProfile')}
+                      </Link>
+                      <button
+                        className="user-dropdown-item signout-item"
+                        onClick={() => { logout(); setMenuOpen(false) }}
+                      >
+                        🚪 {t('signOut')}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <button
+              className="btn primary auth-header-btn"
+              onClick={openSignIn}
+              aria-label="Sign In"
+            >
+              🔑 {t('signIn')}
+            </button>
+          )}
         </div>
       </div>
     </header>

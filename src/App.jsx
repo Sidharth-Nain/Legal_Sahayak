@@ -11,6 +11,8 @@ import Wheel from './pages/Wheel.jsx'
 import Cards from './pages/Cards.jsx'
 import About from './pages/About.jsx'
 import Profile from './pages/Profile.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
+import AuthModal from './components/AuthModal.jsx'
 
 export default function App() {
   const route = useRoute()
@@ -34,9 +36,12 @@ export default function App() {
 
   return (
     <LangProvider>
-      <Header textsize={textsize} setTextsize={setTextsize} />
-      <main>{page}</main>
-      <Footer />
+      <AuthProvider>
+        <Header textsize={textsize} setTextsize={setTextsize} />
+        <main>{page}</main>
+        <Footer />
+        <AuthModal />
+      </AuthProvider>
     </LangProvider>
   )
 }
