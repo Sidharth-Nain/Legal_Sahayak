@@ -8,7 +8,6 @@ export default function Play() {
     { to: '/play/quiz', emoji: '🧠', name: { en: 'Quiz Challenge', hi: 'प्रश्नोत्तरी चुनौती' }, how: { en: 'Answer situation-based questions. Instant feedback helps you learn.', hi: 'स्थिति आधारित प्रश्नों के उत्तर दें। तुरंत प्रतिक्रिया से सीखें।' } },
     { to: '/play/spin-wheel', emoji: '🎡', name: { en: 'Spin Wheel', hi: 'चक्र घुमाएँ' }, how: { en: 'Spin the wheel, get a topic, answer its question.', hi: 'पहिया घुमाएँ, विषय पाएँ, उसका प्रश्न हल करें।' } },
     { to: '/play/cards', emoji: '🃏', name: { en: 'Card Flip', hi: 'कार्ड पलटें' }, how: { en: 'Flip cards: a situation on the front, the concept behind it.', hi: 'कार्ड पलटें: आगे स्थिति, पीछे उसकी अवधारणा।' } },
-    { to: '/play/snake-ladder', emoji: '🐍', name: { en: 'Snake & Ladder', hi: 'साँप और सीढ़ी' }, how: { en: 'Roll, move, and answer civic questions on the board.', hi: 'पासा फेंकें, चलें, और बोर्ड पर नागरिक प्रश्न हल करें।' } },
   ]
   return (
     <div className="wrap">
@@ -17,7 +16,7 @@ export default function Play() {
         <p className="lede" style={{ fontSize: 15 }}>{t('gamesLede')}</p>
       </div>
       <section className="block">
-        <div className="grid two">
+        <div className="grid three">
           {games.map(g => (
             <Link key={g.to} to={g.to} className="card game-card">
               <span className="emoji" aria-hidden="true">{g.emoji}</span>

@@ -15,7 +15,6 @@ export default function Profile() {
     badgeQuizStar: 'badgeQuizStar',
     badgeWheelMaster: 'badgeWheelMaster',
     badgeCardSharp: 'badgeCardSharp',
-    badgeBoardWalker: 'badgeBoardWalker',
     badgeFirstSteps: 'badgeFirstSteps',
   }
 

@@ -65,7 +65,6 @@ const UI = {
   badgeQuizStar: { en: 'Quiz Star', hi: 'प्रश्नोत्तरी सितारा' },
   badgeWheelMaster: { en: 'Wheel Master', hi: 'चक्र गुरु' },
   badgeCardSharp: { en: 'Card Explorer', hi: 'कार्ड अन्वेषक' },
-  badgeBoardWalker: { en: 'Board Walker', hi: 'बोर्ड यात्री' },
   aboutSources: { en: 'Official sources of constitutional truth', hi: 'संवैधानिक सत्य के आधिकारिक स्रोत' },
   aboutAccuracy: {
     en: 'Simplified language must never simplify away the constitutional meaning. Original provision texts above are quoted from official publications.',

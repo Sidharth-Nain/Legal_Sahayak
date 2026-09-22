@@ -2,7 +2,7 @@
 const KEY = 'ls-progress-v1'
 
 function blank() {
-  return { points: 0, conceptsDone: [], badges: [], streak: { last: null, count: 0 }, stats: { quiz: 0, wheel: 0, cards: 0, snl: 0 } }
+  return { points: 0, conceptsDone: [], badges: [], streak: { last: null, count: 0 }, stats: { quiz: 0, wheel: 0, cards: 0 } }
 }
 
 export function loadProgress() {
