@@ -18,18 +18,33 @@ export default function Quiz({ focusConceptId }) {
   const { t, pick } = useLang()
   const [seed] = useState(() => Math.floor(Math.random() * 1e9))
   const session = useMemo(() => {
-    let pool = quizItems
     if (focusConceptId) {
       const related = concepts.find(c => c.id === focusConceptId)
-      pool = pool.filter(q => q.conceptId === focusConceptId)
-      if (pool.length < 3 && related) {
+      let pool = quizItems.filter(q => q.conceptId === focusConceptId)
+      if (pool.length < 5 && related) {
         const extra = quizItems.filter(q => related.relatedConceptIds?.includes(q.conceptId) && q.conceptId !== focusConceptId)
-        pool = pool.concat(extra.slice(0, 3 - pool.length))
+        pool = pool.concat(extra.slice(0, 5 - pool.length))
       }
+      return shuffle(pool).slice(0, 5).map(shuffleOptions)
     }
-    // adaptive-ish ordering: start medium, then mix easier/harder
-    const sorted = [...pool].sort((a, b) => Math.abs(a.difficulty - 2) - Math.abs(b.difficulty - 2))
-    return shuffle(sorted).slice(0, 8).map(shuffleOptions)
+    // Broad, diverse selection across topics for General Quiz Challenge
+    const byConcept = {}
+    for (const q of quizItems) {
+      if (!byConcept[q.conceptId]) byConcept[q.conceptId] = []
+      byConcept[q.conceptId].push(q)
+    }
+    const conceptKeys = shuffle(Object.keys(byConcept))
+    const selected = []
+    for (const cid of conceptKeys) {
+      if (selected.length >= 8) break
+      const qPool = shuffle(byConcept[cid])
+      if (qPool.length > 0) selected.push(qPool[0])
+    }
+    if (selected.length < 8) {
+      const remaining = quizItems.filter(q => !selected.includes(q))
+      selected.push(...shuffle(remaining).slice(0, 8 - selected.length))
+    }
+    return shuffle(selected).map(shuffleOptions)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusConceptId, seed])
 
