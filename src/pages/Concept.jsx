@@ -4,7 +4,7 @@ import { useLang } from '../i18n.jsx'
 import { ListenButton } from '../components/shared.jsx'
 import { concepts } from '../content/concepts.js'
 import { quizItems } from '../content/quiz.js'
-import { markConceptDone, addPoints } from '../progress.js'
+import { recordLessonCompletion } from '../progress.js'
 
 export default function Concept({ conceptId }) {
   const { t, pick, lang } = useLang()
@@ -12,8 +12,10 @@ export default function Concept({ conceptId }) {
 
   useEffect(() => {
     if (concept) {
-      markConceptDone(concept.id)
-      addPoints(5)
+      const timer = setTimeout(() => {
+        recordLessonCompletion(concept.id, concept.theme)
+      }, 1200)
+      return () => clearTimeout(timer)
     }
   }, [conceptId])
 

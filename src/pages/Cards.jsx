@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from '../router.jsx'
 import { useLang } from '../i18n.jsx'
 import { concepts } from '../content/concepts.js'
-import { markGamePlayed, addPoints } from '../progress.js'
+import { markGamePlayed, awardCardsXp } from '../progress.js'
 
 export default function Cards() {
   const { t, pick } = useLang()
@@ -13,10 +13,9 @@ export default function Cards() {
     if (flipped.includes(id)) return
     const nf = [...flipped, id]
     setFlipped(nf)
-    if (nf.length === 1) addPoints(2)
     if (nf.length === shuffled.length) {
       markGamePlayed('cards')
-      addPoints(10)
+      awardCardsXp()
     }
   }
 

@@ -738,6 +738,762 @@ details.more summary { font-weight: 700; cursor: pointer; color: var(--accent-de
   font-size: 14px;
 }
 
+/* ==========================================================================
+   Gamification System Styles (XP, 50 Levels, Badges, Modals, Streaks)
+   ========================================================================== */
+
+/* Header Gamify Pill */
+.header-gamify-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1.5px solid #d4e8e3;
+  padding: 4px 11px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 1px 4px rgba(15, 107, 92, .08);
+  transition: all .2s ease;
+}
+.header-gamify-pill:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.header-lvl-tag {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: .5px;
+}
+.header-xp-val {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.dropdown-lvl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.dropdown-lvl-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+.dropdown-lvl-title {
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* Floating XP Toasts */
+.xp-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+  pointer-events: none;
+}
+.xp-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(30, 42, 58, .94);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .24);
+  backdrop-filter: blur(8px);
+  animation: xpSlideIn .35s cubic-bezier(.16, 1, .3, 1) forwards;
+  pointer-events: auto;
+}
+@keyframes xpSlideIn {
+  0% { opacity: 0; transform: translateY(20px) scale(.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.xp-toast-pill {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  font-weight: 900;
+  font-size: 13px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, .4);
+}
+.xp-toast-label {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* Gamification Celebration Modals */
+.gamify-modal {
+  position: relative;
+  text-align: center;
+  padding: 36px 30px 28px !important;
+  max-width: 440px !important;
+  overflow: hidden;
+  border: 2px solid #e1efe9;
+  box-shadow: 0 16px 48px rgba(15, 107, 92, .18);
+}
+.gamify-modal-glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(15, 107, 92, .22) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.gamify-modal-glow.badge-glow {
+  background: radial-gradient(circle, rgba(180, 83, 9, .24) 0%, transparent 70%);
+}
+.gamify-modal-badge-ring {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 14px;
+  background: #fff;
+  border: 3px solid #d1ebd8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(15, 107, 92, .15);
+}
+.modal-large-emoji {
+  font-size: 42px;
+}
+.gamify-kicker {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.gamify-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.gamify-level-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--saffron);
+  margin-bottom: 12px;
+}
+.gamify-bonus-pill {
+  display: inline-block;
+  background: #fdf3e7;
+  color: var(--saffron);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #fed7aa;
+  margin-bottom: 14px;
+}
+.gamify-sub {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+.gamify-req {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+.gamify-rarity-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.gamify-btn {
+  width: 100%;
+  padding: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  border-radius: 12px;
+}
+
+/* Rarity Tags */
+.rarity-tag {
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.rarity-tag.common {
+  background: #eef2f6;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+.rarity-tag.uncommon {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+.rarity-tag.rare {
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+.rarity-tag.epic {
+  background: #fdf2f8;
+  color: #be185d;
+  border: 1px solid #fbcfe8;
+}
+.rarity-tag.legendary {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, .25);
+}
+
+/* Progression Card on Profile */
+.gamify-progression-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f6faf9 100%);
+  border: 1.5px solid #d8ede7;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-top: 18px;
+}
+.progression-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.progression-kicker {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  color: var(--accent);
+}
+.progression-level-num {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.1;
+  margin: 2px 0;
+}
+.progression-level-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--saffron);
+}
+.progression-xp-counter {
+  text-align: right;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 8px 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+}
+.big-xp {
+  display: block;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.xp-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-faint);
+  letter-spacing: .8px;
+}
+.progression-bar-container {
+  margin-top: 16px;
+}
+.progression-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.needed-tag {
+  color: var(--accent);
+  font-weight: 700;
+}
+.progress-bar.lg {
+  height: 12px;
+  background: #e6eee9;
+}
+.progress-bar.lg > div {
+  background: linear-gradient(90deg, var(--accent) 0%, #10b981 100%);
+}
+
+.gamify-stats-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+.pill-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e2ece8;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+.pill-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.pill-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.pill-lbl {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* Profile Identity Enhancements */
+.avatar-level-chip {
+  margin-top: -12px;
+  background: var(--saffron);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(180, 83, 9, .3);
+}
+.profile-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.profile-student-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--saffron);
+}
+.profile-level-badge {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 107, 92, .2);
+}
+.how-xp-btn {
+  font-weight: 700 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Gamify Tabs */
+.gamify-tab-bar {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid var(--line);
+  margin-top: 28px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.gamify-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 10px 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.gamify-tab-btn:hover {
+  color: var(--ink);
+}
+.gamify-tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Badges Container Grid */
+.badges-container-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.badge-card-detailed {
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+  display: flex;
+  flex-direction: column;
+  transition: all .2s ease;
+}
+.badge-card-detailed.unlocked {
+  border-color: #a7d8cd;
+  background: linear-gradient(180deg, #ffffff 0%, #f6fbf9 100%);
+}
+.badge-card-detailed.locked {
+  opacity: .82;
+  background: #fbfbf9;
+}
+.badge-card-detailed:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .07);
+}
+.badge-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.badge-card-icon {
+  font-size: 28px;
+}
+.badge-card-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 8px 0 4px;
+}
+.badge-card-req {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+  flex: 1;
+}
+.badge-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.badge-reward-text {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--ok);
+}
+.badge-status-tag {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.badge-status-tag.unlocked-tag {
+  background: var(--ok-soft);
+  color: var(--ok);
+  border: 1px solid rgba(27, 127, 77, .25);
+}
+.badge-status-tag.locked-tag {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+.badge-mini-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.badge-mini-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.badge-mini-progress-bar > div {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+.badge-mini-progress-txt {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* XP History Stream */
+.xp-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.xp-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 18px;
+}
+.history-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.history-icon {
+  font-size: 22px;
+}
+.history-title {
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.history-meta {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+.history-amount {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--ok);
+}
+
+/* 50-Level Roadmap Grid */
+.roadmap-header {
+  margin-bottom: 14px;
+}
+.levels-roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.roadmap-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+  transition: all .2s;
+}
+.roadmap-card.completed {
+  border-color: #a7d8cd;
+  background: #f4faf8;
+}
+.roadmap-card.current {
+  border: 2px solid var(--accent);
+  background: #eef7f5;
+  box-shadow: 0 4px 12px rgba(15, 107, 92, .18);
+}
+.roadmap-card.future {
+  opacity: .75;
+}
+.roadmap-lvl-num {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--accent);
+}
+.roadmap-lvl-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 4px 0 6px;
+  line-height: 1.3;
+}
+.roadmap-lvl-xp {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.current-lvl-indicator {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--saffron);
+  letter-spacing: .5px;
+}
+
+/* "How XP Works" Modal */
+.how-xp-modal {
+  max-width: 580px !important;
+  max-height: 85vh;
+  overflow-y: auto;
+  text-align: left !important;
+  padding: 24px 28px !important;
+}
+.modal-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.modal-close-btn {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.how-xp-body h4 {
+  font-size: 16px;
+  margin: 18px 0 8px;
+  color: var(--ink);
+}
+.how-xp-table-card {
+  background: #fafaf8;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.how-xp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.how-xp-row:last-child {
+  border-bottom: none;
+}
+.how-xp-rules-list {
+  padding-left: 20px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.how-xp-rules-list li {
+  margin-bottom: 6px;
+}
+.badge-xp-reward-tag {
+  background: #e8f5ee;
+  color: var(--ok);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* Quiz Challenge Mode Enhancements */
+.challenge-timer-pill {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 13.5px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #fca5a5;
+  animation: pulseTimer 1s infinite alternate;
+}
+.challenge-timer-pill.warning {
+  background: #ef4444;
+  color: #fff;
+}
+@keyframes pulseTimer {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+.quiz-mode-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fdf6ec;
+  border: 1px solid #fde0b8;
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 10px 0 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mode-desc {
+  font-size: 13px;
+  color: #92400e;
+  font-weight: 600;
+}
+.difficulty-tag {
+  font-size: 11.5px;
+  font-weight: 800;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.quiz-done-icon {
+  font-size: 48px;
+}
+.quiz-result-score-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+.res-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.res-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink);
+}
+.res-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.res-stat.highlight .res-num {
+  color: var(--ok);
+}
+.res-divider {
+  width: 1px;
+  height: 36px;
+  background: #cbd5e1;
+}
+.quiz-cap-notice {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
 @media (max-width: 640px) {
   .main-nav { display: none; }
   .hero { padding: 34px 0 26px; }
@@ -748,11 +1504,30 @@ details.more summary { font-weight: 700; cursor: pointer; color: var(--accent-de
   .profile-name-row {
     justify-content: center;
   }
+  .profile-title-row {
+    justify-content: center;
+  }
   .profile-actions-row {
     justify-content: center;
   }
   .profile-banner-callout {
     flex-direction: column;
     text-align: center;
+  }
+  .progression-head {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  .progression-xp-counter {
+    text-align: center;
+    width: 100%;
+  }
+  .quiz-result-score-box {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .res-divider {
+    display: none;
   }
 }

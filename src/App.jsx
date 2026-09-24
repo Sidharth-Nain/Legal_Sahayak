@@ -13,6 +13,7 @@ import About from './pages/About.jsx'
 import Profile from './pages/Profile.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import AuthModal from './components/AuthModal.jsx'
+import GamificationOverlays from './components/GamificationOverlays.jsx'
 
 export default function App() {
   const route = useRoute()
@@ -41,6 +42,7 @@ export default function App() {
         <main>{page}</main>
         <Footer />
         <AuthModal />
+        <GamificationOverlays />
       </AuthProvider>
     </LangProvider>
   )

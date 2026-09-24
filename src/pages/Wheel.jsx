@@ -3,7 +3,7 @@ import { Link } from '../router.jsx'
 import { useLang } from '../i18n.jsx'
 import { quizItems, shuffleOptions } from '../content/quiz.js'
 import { concepts } from '../content/concepts.js'
-import { addPoints, markGamePlayed, grantBadge } from '../progress.js'
+import { awardWheelXp, markGamePlayed, grantBadge } from '../progress.js'
 
 const CATS = [
   { id: 'preamble', label: { en: 'Preamble', hi: 'उद्देशिका' }, color: '#0f6b5c' },
@@ -79,7 +79,7 @@ export default function Wheel() {
   const answer = (i) => {
     if (chosen !== null) return
     setChosen(i)
-    if (i === q.correctIndex) { setScore(s => s + 10); addPoints(10) }
+    if (i === q.correctIndex) { setScore(s => s + 10); awardWheelXp() }
   }
 
   const nextSpin = () => {

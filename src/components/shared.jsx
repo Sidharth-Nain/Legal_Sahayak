@@ -4,6 +4,7 @@ import { useLang } from '../i18n.jsx'
 import { speak, stopSpeech } from '../speech.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { loadProgress } from '../progress.js'
+import { getLevelDetails } from '../gamification.js'
 
 export function ChakraIcon({ size = 34 }) {
   return (
@@ -34,16 +35,16 @@ export function Watermark() {
 }
 
 export function Header({ textsize, setTextsize }) {
-  const { t, lang, setLang } = useLang()
+  const { t, lang, setLang, pick } = useLang()
   const { user, openSignIn, logout } = useAuth()
   const route = useRoute()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [points, setPoints] = useState(() => loadProgress().points || 0)
+  const [progress, setProgress] = useState(() => loadProgress())
 
   // Listen to progress updates reactively
   useEffect(() => {
     const handleUpdate = (e) => {
-      setPoints(e.detail?.points ?? loadProgress().points ?? 0)
+      setProgress(e.detail || loadProgress())
     }
     window.addEventListener('ls-progress-update', handleUpdate)
     return () => window.removeEventListener('ls-progress-update', handleUpdate)
@@ -62,6 +63,9 @@ export function Header({ textsize, setTextsize }) {
     const parts = name.trim().split(' ')
     return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0][0].toUpperCase()
   }
+
+  const xp = progress.xp || progress.points || 0
+  const lvlInfo = getLevelDetails(xp)
 
   return (
     <header className="site-header">
@@ -88,6 +92,12 @@ export function Header({ textsize, setTextsize }) {
             {lang === 'en' ? 'हिन्दी' : 'English'}
           </button>
 
+          {/* Gamification Level & XP Indicator in Header */}
+          <Link to="/profile" className="header-gamify-pill" title={`${pick(lvlInfo.title)} · ${xp} XP`}>
+            <span className="header-lvl-tag">Lv.{lvlInfo.level}</span>
+            <span className="header-xp-val">{xp} XP</span>
+          </Link>
+
           {/* User Auth Section */}
           {user ? (
             <div className="user-menu-container">
@@ -105,7 +115,6 @@ export function Header({ textsize, setTextsize }) {
                   </span>
                 )}
                 <span className="user-name-short">{user.displayName || 'Citizen'}</span>
-                <span className="user-points-badge">🏅 {points}</span>
                 <span className="user-menu-arrow">▾</span>
               </button>
 
@@ -116,6 +125,10 @@ export function Header({ textsize, setTextsize }) {
                     <div className="user-dropdown-header">
                       <strong>{user.displayName || 'Citizen'}</strong>
                       <span className="user-dropdown-email">{user.email || (user.isAnonymous ? t('guest') : '')}</span>
+                      <div className="dropdown-lvl-row">
+                        <span className="dropdown-lvl-badge">Level {lvlInfo.level}</span>
+                        <span className="dropdown-lvl-title">{pick(lvlInfo.title)}</span>
+                      </div>
                     </div>
                     <div className="user-dropdown-links">
                       <Link to="/profile" className="user-dropdown-item" onClick={() => setMenuOpen(false)}>

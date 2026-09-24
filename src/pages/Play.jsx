@@ -5,7 +5,8 @@ import { useLang } from '../i18n.jsx'
 export default function Play() {
   const { t, pick } = useLang()
   const games = [
-    { to: '/play/quiz', emoji: '🧠', name: { en: 'Quiz Challenge', hi: 'प्रश्नोत्तरी चुनौती' }, how: { en: 'Answer situation-based questions. Instant feedback helps you learn.', hi: 'स्थिति आधारित प्रश्नों के उत्तर दें। तुरंत प्रतिक्रिया से सीखें।' } },
+    { to: '/play/quiz', emoji: '🧠', name: { en: 'Quiz Challenge', hi: 'प्रश्नोत्तरी चुनौती' }, how: { en: 'Answer situation-based questions at your own pace. Instant feedback helps you learn.', hi: 'स्थिति आधारित प्रश्नों के उत्तर दें। तुरंत प्रतिक्रिया से सीखें।' } },
+    { to: '/play/quiz?mode=challenge', emoji: '⚡', name: { en: 'Timed Challenge', hi: 'समय-बद्ध चुनौती' }, how: { en: 'Beat the 60-second timer on tough constitutional dilemmas to earn special badges.', hi: 'विशेष बैज पाने के लिए कठिन संवैधानिक प्रश्नों पर 60 सेकंड के टाइमर को हराएँ।' } },
     { to: '/play/spin-wheel', emoji: '🎡', name: { en: 'Spin Wheel', hi: 'चक्र घुमाएँ' }, how: { en: 'Spin the wheel, get a topic, answer its question.', hi: 'पहिया घुमाएँ, विषय पाएँ, उसका प्रश्न हल करें।' } },
     { to: '/play/cards', emoji: '🃏', name: { en: 'Card Flip', hi: 'कार्ड पलटें' }, how: { en: 'Flip cards: a situation on the front, the concept behind it.', hi: 'कार्ड पलटें: आगे स्थिति, पीछे उसकी अवधारणा।' } },
   ]
@@ -16,7 +17,7 @@ export default function Play() {
         <p className="lede" style={{ fontSize: 15 }}>{t('gamesLede')}</p>
       </div>
       <section className="block">
-        <div className="grid three">
+        <div className="grid two">
           {games.map(g => (
             <Link key={g.to} to={g.to} className="card game-card">
               <span className="emoji" aria-hidden="true">{g.emoji}</span>
