@@ -4,6 +4,7 @@ import { concepts } from '../content/concepts.js'
 import { loadProgress, resetProgress } from '../progress.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { GAMIFICATION_CONFIG, getLevelDetails, LEVELS } from '../gamification.js'
+import CertificateModal from '../components/CertificateModal.jsx'
 
 export default function Profile() {
   const { t, pick } = useLang()
@@ -12,7 +13,8 @@ export default function Profile() {
   const [resetConfirm, setResetConfirm] = useState(false)
   const [showHowXpWorks, setShowHowXpWorks] = useState(false)
   const [showAllLevels, setShowAllLevels] = useState(false)
-  const [activeTab, setActiveTab] = useState('badges') // 'badges' | 'history' | 'levels'
+  const [activeTab, setActiveTab] = useState('badges') // 'badges' | 'certificates' | 'history' | 'levels'
+  const [selectedCert, setSelectedCert] = useState(null)
 
   useEffect(() => {
     const handleUpdate = (e) => {
@@ -42,6 +44,57 @@ export default function Profile() {
   // Count unlocked badges
   const unlockedBadgeCount = p.badges?.length || 0
   const totalBadges = GAMIFICATION_CONFIG.BADGES.length
+
+  const AVAILABLE_CERTIFICATES = [
+    {
+      id: 'cert-constitution-architect',
+      icon: '🏛️',
+      title: { en: 'Certified Constitutional Architect', hi: 'प्रमाणित संविधान निर्माता' },
+      requirement: { en: 'Complete all 3 levels of "Build Your Constitution" game.', hi: '"संविधान निर्माण" खेल के सभी 3 स्तर पूरे करें।' },
+      description: {
+        en: 'Demonstrated outstanding civic and constitutional acumen by architecting the foundational pillars, tripartite separation of powers, federal devolution, and autonomous watchdogs of the Republic of India.',
+        hi: 'भारत के गणराज्य के आधारभूत स्तंभों, तीनों शासन अंगों, संघीय ढांचे और स्वतंत्र संवैधानिक संस्थाओं को सफलतापूर्वक व्यवस्थित कर उत्कृष्ट संवैधानिक ज्ञान प्रदर्शित किया।'
+      },
+      actionLink: '#/play/build-constitution',
+      actionLabel: { en: 'Play Game →', hi: 'खेल खेलें →' },
+      isUnlocked: (prog) => (prog.builderLevelsDone?.length >= 3) || prog.certificates?.some(c => c.id === 'cert-constitution-architect')
+    },
+    {
+      id: 'cert-scholar-lvl5',
+      icon: '📜',
+      title: { en: 'Constitutional Scholar (Level 5)', hi: 'संवैधानिक विद्वान (स्तर 5)' },
+      requirement: { en: 'Reach Level 5: Constitution Scout.', hi: 'स्तर 5 (संविधान स्काउट) तक पहुँचें।' },
+      description: {
+        en: 'Conferred for successfully mastering initial constitutional foundations and reaching Level 5 on Legal Sahayak.',
+        hi: 'लीगल सहायक पर प्रारंभिक संवैधानिक आधारशिलाओं को पूर्ण करने और स्तर 5 प्राप्त करने पर प्रदान किया गया।'
+      },
+      isUnlocked: (prog) => (prog.level >= 5) || prog.certificates?.some(c => c.id === 'cert-scholar-lvl5')
+    },
+    {
+      id: 'cert-fellow-lvl10',
+      icon: '⚖️',
+      title: { en: 'Senior Constitutional Fellow (Level 10)', hi: 'वरिष्ठ संवैधानिक अध्येता (स्तर 10)' },
+      requirement: { en: 'Reach Level 10: Democracy Advocate.', hi: 'स्तर 10 (लोकतंत्र समर्थक) तक पहुँचें।' },
+      description: {
+        en: 'Conferred for advanced constitutional expertise, civic dedication, and reaching Level 10 on Legal Sahayak.',
+        hi: 'लीगल सहायक पर उन्नत संवैधानिक ज्ञान और स्तर 10 तक पहुँचने पर प्रदान किया गया।'
+      },
+      isUnlocked: (prog) => (prog.level >= 10) || prog.certificates?.some(c => c.id === 'cert-fellow-lvl10')
+    },
+    {
+      id: 'cert-grandmaster-lvl25',
+      icon: '👑',
+      title: { en: 'Constitutional Grandmaster (Level 25)', hi: 'संवैधानिक महाविद्वान (स्तर 25)' },
+      requirement: { en: 'Reach Level 25: Senior Fellow.', hi: 'स्तर 25 (वरिष्ठ अध्येता) तक पहुँचें।' },
+      description: {
+        en: 'Conferred for exceptional sustained dedication to constitutional scholarship and civil society empowerment.',
+        hi: 'संवैधानिक ज्ञान और नागरिक समाज के सशक्तिकरण के प्रति असाधारण समर्पण के लिए प्रदान किया गया।'
+      },
+      isUnlocked: (prog) => (prog.level >= 25) || prog.certificates?.some(c => c.id === 'cert-grandmaster-lvl25')
+    }
+  ]
+
+  const unlockedCertCount = AVAILABLE_CERTIFICATES.filter(c => c.isUnlocked(p)).length
 
   const formatDate = (isoString) => {
     if (!isoString) return ''
@@ -225,13 +278,19 @@ export default function Profile() {
         </div>
       </section>
 
-      {/* Tabs: Badges / XP History / Level Roadmap */}
+      {/* Tabs: Badges / Certificates / XP History / Level Roadmap */}
       <div className="gamify-tab-bar">
         <button
           className={`gamify-tab-btn ${activeTab === 'badges' ? 'active' : ''}`}
           onClick={() => setActiveTab('badges')}
         >
           🏅 {pick({ en: `Badges (${unlockedBadgeCount}/${totalBadges})`, hi: `बैज संग्रह (${unlockedBadgeCount}/${totalBadges})` })}
+        </button>
+        <button
+          className={`gamify-tab-btn ${activeTab === 'certificates' ? 'active' : ''}`}
+          onClick={() => setActiveTab('certificates')}
+        >
+          🎓 {pick({ en: `Certificates (${unlockedCertCount}/${AVAILABLE_CERTIFICATES.length})`, hi: `ई-प्रमाणपत्र (${unlockedCertCount}/${AVAILABLE_CERTIFICATES.length})` })}
         </button>
         <button
           className={`gamify-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
@@ -311,6 +370,86 @@ export default function Profile() {
                       <span className="badge-mini-progress-txt">{prog.current} / {prog.target}</span>
                     </div>
                   )}
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* TAB: E-CERTIFICATES RECOGNITION */}
+      {activeTab === 'certificates' && (
+        <section className="block">
+          <div className="badges-header-row">
+            <div>
+              <h3 className="section-title" style={{ margin: 0 }}>
+                {pick({ en: 'Constitutional E-Certificates', hi: 'संवैधानिक ई-प्रमाणपत्र' })}
+              </h3>
+              <p className="muted" style={{ fontSize: 13.5, margin: '3px 0 12px' }}>
+                {pick({
+                  en: 'Earn official verifiable E-Certificates to showcase on your LinkedIn profile, social media, or academic resume.',
+                  hi: 'अपने लिंक्डइन प्रोफाइल, सोशल मीडिया या रिज्यूम पर प्रदर्शित करने के लिए आधिकारिक ई-प्रमाणपत्र अर्जित करें।'
+                })}
+              </p>
+            </div>
+            <span className="score-pill">
+              {unlockedCertCount} / {AVAILABLE_CERTIFICATES.length} {pick({ en: 'Earned', hi: 'अर्जित' })}
+            </span>
+          </div>
+
+          <div className="certificates-grid">
+            {AVAILABLE_CERTIFICATES.map(cert => {
+              const isUnlocked = cert.isUnlocked(p)
+              const storedCert = p.certificates?.find(c => c.id === cert.id)
+
+              return (
+                <div
+                  key={cert.id}
+                  className={`profile-cert-card ${isUnlocked ? 'unlocked' : 'locked'}`}
+                >
+                  <div className="cert-card-header">
+                    <span className="cert-card-icon" aria-hidden="true">{cert.icon}</span>
+                    <span className={`cert-status-badge ${isUnlocked ? 'verified' : 'locked'}`}>
+                      {isUnlocked
+                        ? `✓ ${pick({ en: 'VERIFIED CREDENTIAL', hi: 'सत्यापित प्रमाणपत्र' })}`
+                        : `🔒 ${pick({ en: 'LOCKED', hi: 'अनलॉक होना शेष' })}`}
+                    </span>
+                  </div>
+
+                  <h4 className="cert-card-title">{pick(cert.title)}</h4>
+                  <p className="cert-card-desc">{pick(cert.description)}</p>
+
+                  <div className="cert-card-req-row">
+                    <span className="req-label">{pick({ en: 'Requirement', hi: 'आवश्यकता' })}:</span>
+                    <span className="req-text">{pick(cert.requirement)}</span>
+                  </div>
+
+                  <div className="cert-card-footer">
+                    {isUnlocked ? (
+                      <button
+                        className="btn primary small cert-open-btn"
+                        onClick={() => setSelectedCert(storedCert || {
+                          id: cert.id,
+                          title: cert.title,
+                          description: cert.description,
+                          candidateName: user?.displayName || 'Citizen Scholar',
+                          issueDate: new Date().toISOString()
+                        })}
+                      >
+                        🎓 {pick({ en: 'View, Print & Share on LinkedIn', hi: 'देखें, प्रिंट व LinkedIn पर शेयर करें' })}
+                      </button>
+                    ) : (
+                      cert.actionLink ? (
+                        <a href={cert.actionLink} className="btn ghost small">
+                          🎮 {pick(cert.actionLabel)}
+                        </a>
+                      ) : (
+                        <span className="muted" style={{ fontSize: 13, fontStyle: 'italic' }}>
+                          {pick({ en: 'Keep leveling up to unlock!', hi: 'अनलॉक करने के लिए स्तर बढ़ाएं!' })}
+                        </span>
+                      )
+                    )}
+                  </div>
                 </div>
               )
             })}
@@ -499,6 +638,15 @@ export default function Profile() {
           </div>
         </div>
       )}
+
+      {/* Official Certificate Modal */}
+      {selectedCert && (
+        <CertificateModal
+          certificate={selectedCert}
+          onClose={() => setSelectedCert(null)}
+        />
+      )}
     </div>
   )
 }
+

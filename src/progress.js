@@ -43,11 +43,13 @@ function blank() {
     badges: [],
     badgeUnlockedAt: {},
     streak: { last: null, count: 0, longest: 0 },
-    stats: { quiz: 0, wheel: 0, cards: 0, challenges: 0 },
+    stats: { quiz: 0, wheel: 0, cards: 0, challenges: 0, builder: 0 },
     consecutiveQuizPasses: 0,
     challengesDone: 0,
     hardChallengesDone: 0,
     timedChallengesDone: 0,
+    builderLevelsDone: [],
+    certificates: [],
     dailyActivity: {
       date: todayKey(),
       repeatableXp: 0,
@@ -55,6 +57,7 @@ function blank() {
       wheel: 0,
       cards: 0,
       challenges: 0,
+      builder: 0,
       lessonsToday: []
     },
     xpHistory: []
@@ -83,6 +86,11 @@ export function loadProgress() {
         lessonsToday: []
       }
     }
+
+    // Ensure arrays exist
+    p.certificates = p.certificates || []
+    p.builderLevelsDone = p.builderLevelsDone || []
+    p.stats = { quiz: 0, wheel: 0, cards: 0, challenges: 0, builder: 0, ...(p.stats || {}) }
 
     // Refresh current level
     const lvlInfo = getLevelDetails(p.xp)
@@ -244,6 +252,35 @@ function handleLevelProgression(p, oldXp, newXp) {
 
     // Check Level Up badge
     checkBadges(p)
+
+    // Check Milestone Certificates
+    p.certificates = p.certificates || []
+    if (newLvl >= 5 && !p.certificates.some(c => c.id === 'cert-scholar-lvl5')) {
+      p.certificates.push({
+        id: 'cert-scholar-lvl5',
+        type: 'level_milestone',
+        title: { en: 'Constitutional Scholar (Level 5)', hi: 'संवैधानिक विद्वान (स्तर 5)' },
+        description: {
+          en: 'Conferred for successfully mastering initial constitutional foundations and reaching Level 5: Constitution Scout on Legal Sahayak.',
+          hi: 'लीगल सहायक पर प्रारंभिक संवैधानिक आधारशिलाओं को पूर्ण करने और स्तर 5 (संविधान स्काउट) प्राप्त करने पर प्रदान किया गया।'
+        },
+        candidateName: currentUserProfile?.displayName || 'Citizen Scholar',
+        issueDate: new Date().toISOString()
+      })
+    }
+    if (newLvl >= 10 && !p.certificates.some(c => c.id === 'cert-fellow-lvl10')) {
+      p.certificates.push({
+        id: 'cert-fellow-lvl10',
+        type: 'level_milestone',
+        title: { en: 'Senior Constitutional Fellow (Level 10)', hi: 'वरिष्ठ संवैधानिक अध्येता (स्तर 10)' },
+        description: {
+          en: 'Conferred for advanced constitutional expertise, civic dedication, and reaching Level 10: Democracy Advocate on Legal Sahayak.',
+          hi: 'लीगल सहायक पर उन्नत संवैधानिक ज्ञान और स्तर 10 (लोकतंत्र समर्थक) तक पहुँचने पर प्रदान किया गया।'
+        },
+        candidateName: currentUserProfile?.displayName || 'Citizen Scholar',
+        issueDate: new Date().toISOString()
+      })
+    }
   }
 }
 
@@ -529,6 +566,79 @@ export function awardCardsXp() {
       true
     )
   }
+}
+
+/**
+ * Manages official E-Certificates
+ */
+export function awardCertificate(certData) {
+  const p = loadProgress()
+  p.certificates = p.certificates || []
+  const existingIdx = p.certificates.findIndex(c => c.id === certData.id)
+  const fullCert = {
+    id: certData.id,
+    type: certData.type || 'achievement',
+    title: certData.title,
+    description: certData.description,
+    candidateName: certData.candidateName || currentUserProfile?.displayName || 'Citizen Scholar',
+    issueDate: certData.issueDate || new Date().toISOString(),
+    metadata: certData.metadata || {}
+  }
+  if (existingIdx === -1) {
+    p.certificates.push(fullCert)
+    save(p)
+  }
+  return fullCert
+}
+
+/**
+ * Records completion of a level in "Build Your Constitution" game.
+ */
+export function recordBuilderLevelCompletion({ level, score, total, mistakes = 0, durationSeconds = 0 }) {
+  const p = loadProgress()
+  p.stats.builder = (p.stats.builder || 0) + 1
+  p.builderLevelsDone = p.builderLevelsDone || []
+  if (!p.builderLevelsDone.includes(level)) {
+    p.builderLevelsDone.push(level)
+  }
+
+  // Calculate XP
+  const baseLvlXp = 40 + (level * 15) // L1: 55, L2: 70, L3: 85
+  const accuracyBonus = mistakes === 0 ? 30 : mistakes <= 2 ? 15 : 5
+  const totalXp = baseLvlXp + accuracyBonus
+
+  awardXp(
+    totalXp,
+    'builder',
+    {
+      en: `Build Your Constitution (Level ${level} Complete)`,
+      hi: `संविधान निर्माण (स्तर ${level} पूर्ण)`
+    },
+    false
+  )
+
+  let certificateAwarded = null
+  // When completing Level 3 or all 3 levels, award the Master Constitutional Architect Certificate!
+  if (level === 3 || p.builderLevelsDone.length >= 3) {
+    certificateAwarded = awardCertificate({
+      id: 'cert-constitution-architect',
+      type: 'architect',
+      title: {
+        en: 'Certified Constitutional Architect',
+        hi: 'प्रमाणित संविधान निर्माता'
+      },
+      description: {
+        en: 'Demonstrated outstanding civic and constitutional acumen by architecting the foundational pillars, tripartite separation of powers, federal devolution, and autonomous watchdogs of the Republic of India.',
+        hi: 'भारत के गणराज्य के आधारभूत स्तंभों, तीनों शासन अंगों, संघीय ढांचे और स्वतंत्र संवैधानिक संस्थाओं को सफलतापूर्वक व्यवस्थित कर उत्कृष्ट संवैधानिक ज्ञान प्रदर्शित किया।'
+      },
+      candidateName: currentUserProfile?.displayName || 'Citizen Architect',
+      issueDate: new Date().toISOString(),
+      metadata: { level, score, total, mistakes, durationSeconds }
+    })
+  }
+
+  save(p)
+  return { xpEarned: totalXp, certificateAwarded }
 }
 
 /**

@@ -9,6 +9,7 @@ import Play from './pages/Play.jsx'
 import Quiz from './pages/Quiz.jsx'
 import Wheel from './pages/Wheel.jsx'
 import Cards from './pages/Cards.jsx'
+import BuildConstitution from './pages/BuildConstitution.jsx'
 import About from './pages/About.jsx'
 import Profile from './pages/Profile.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -28,7 +29,8 @@ export default function App() {
   else if (route === '/learn') page = <Learn />
   else if (route.startsWith('/learn/')) page = <Concept conceptId={route.slice('/learn/'.length)} />
   else if (route === '/play') page = <Play />
-  else if (route === '/play/quiz') page = <Quiz focusConceptId={new URLSearchParams(window.location.hash.split('?')[1] || '').get('c') || ''} />
+  else if (route === '/play/build-constitution') page = <BuildConstitution />
+  else if (route.startsWith('/play/quiz')) page = <Quiz focusConceptId={new URLSearchParams(window.location.hash.split('?')[1] || '').get('c') || ''} />
   else if (route === '/play/spin-wheel') page = <Wheel />
   else if (route === '/play/cards') page = <Cards />
   else if (route === '/about') page = <About />
