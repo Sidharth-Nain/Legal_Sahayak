@@ -6,10 +6,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { loadProgress } from '../progress.js'
 import { getLevelDetails } from '../gamification.js'
 
-export function ChakraIcon({ size = 34 }) {
+export function ChakraIcon({ size = 26 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
-      <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" strokeWidth="3" />
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" fill="none">
+      <circle cx="24" cy="24" r="21" stroke="currentColor" strokeWidth="3" />
       <g stroke="currentColor" strokeWidth="1.6">
         <line x1="24" y1="5" x2="24" y2="43" /><line x1="5" y1="24" x2="43" y2="24" />
         <line x1="10.4" y1="10.4" x2="37.6" y2="37.6" /><line x1="37.6" y1="10.4" x2="10.4" y2="37.6" />
@@ -24,12 +24,12 @@ export function ChakraIcon({ size = 34 }) {
 export function Watermark() {
   return (
     <svg className="watermark" width="240" height="240" viewBox="0 0 48 48" aria-hidden="true">
-      <circle cx="24" cy="24" r="21" fill="none" stroke="#1e2a3a" strokeWidth="2" />
-      <g stroke="#1e2a3a" strokeWidth="1">
+      <circle cx="24" cy="24" r="21" fill="none" stroke="#087F6E" strokeWidth="2" />
+      <g stroke="#087F6E" strokeWidth="1">
         <line x1="24" y1="5" x2="24" y2="43" /><line x1="5" y1="24" x2="43" y2="24" />
         <line x1="10.4" y1="10.4" x2="37.6" y2="37.6" /><line x1="37.6" y1="10.4" x2="10.4" y2="37.6" />
       </g>
-      <circle cx="24" cy="24" r="2.6" fill="#1e2a3a" />
+      <circle cx="24" cy="24" r="2.6" fill="#087F6E" />
     </svg>
   )
 }
@@ -39,6 +39,7 @@ export function Header({ textsize, setTextsize }) {
   const { user, openSignIn, logout } = useAuth()
   const route = useRoute()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [progress, setProgress] = useState(() => loadProgress())
 
   // Listen to progress updates reactively
@@ -50,9 +51,10 @@ export function Header({ textsize, setTextsize }) {
     return () => window.removeEventListener('ls-progress-update', handleUpdate)
   }, [])
 
-  // Close menu when route changes or clicking outside
+  // Close menus when route changes
   useEffect(() => {
     setMenuOpen(false)
+    setMobileNavOpen(false)
   }, [route])
 
   const active = (path) => (route === path || route.startsWith(path + '/') ? 'active' : '')
@@ -70,35 +72,48 @@ export function Header({ textsize, setTextsize }) {
   return (
     <header className="site-header">
       <div className="wrap bar">
+        {/* Brand / Logo */}
         <Link to="/" className="brand" aria-label="Legal Sahayak home">
-          <ChakraIcon />
-          <h1>Legal Sahayak</h1>
+          <div className="brand-icon-wrap" aria-hidden="true">
+            <ChakraIcon size={24} />
+          </div>
+          <div className="brand-text-group">
+            <span className="brand-title">Legal Sahayak</span>
+            <span className="brand-subtitle">{pick({ en: 'Civic Academy', hi: 'संवैधानिक साक्षरता' })}</span>
+          </div>
         </Link>
-        <nav className="main-nav" aria-label="Main">
-          <Link to="/learn" className={active('/learn')}>{t('navLearn')}</Link>
-          <Link to="/play" className={active('/play')}>{t('navPlay')}</Link>
-          <Link to="/about" className={active('/about')}>{t('navAbout')}</Link>
-          <Link to="/profile" className={active('/profile')}>{t('navProfile')}</Link>
+
+        {/* Desktop Main Navigation Tabs */}
+        <nav className="main-nav" aria-label="Main Navigation">
+          <Link to="/learn" className={active('/learn')}>📖 {t('navLearn')}</Link>
+          <Link to="/play" className={active('/play')}>🎮 {t('navPlay')}</Link>
+          <Link to="/profile" className={active('/profile')}>🏆 {t('navProfile')}</Link>
+          <Link to="/about" className={active('/about')}>ℹ️ {t('navAbout')}</Link>
         </nav>
+
+        {/* Header Tools & Status */}
         <div className="header-tools">
+          {/* Accessibility text size switch */}
           <button className="tool-btn" onClick={cycle} title="Text size" aria-label="Change text size">
             {textsize === 'base' ? 'A' : textsize === 'lg' ? 'A+' : 'A++'}
           </button>
+
+          {/* Bilingual Switcher */}
           <button
             className="tool-btn lang-btn"
             onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
             aria-label="Change language"
           >
-            {lang === 'en' ? 'हिन्दी' : 'English'}
+            {lang === 'en' ? '🇮🇳 हिन्दी' : '🌐 English'}
           </button>
 
-          {/* Gamification Level & XP Indicator in Header */}
+          {/* Gamification Progress Pill */}
           <Link to="/profile" className="header-gamify-pill" title={`${pick(lvlInfo.title)} · ${xp} XP`}>
             <span className="header-lvl-tag">Lv.{lvlInfo.level}</span>
-            <span className="header-xp-val">{xp} XP</span>
+            <span className="header-xp-val">{xp.toLocaleString()} XP</span>
           </Link>
 
-          {/* User Auth Section */}
+          {/* User Auth Menu */}
           {user ? (
             <div className="user-menu-container">
               <button
@@ -147,32 +162,80 @@ export function Header({ textsize, setTextsize }) {
             </div>
           ) : (
             <button
-              className="btn primary auth-header-btn"
+              className="btn primary small auth-header-btn"
               onClick={openSignIn}
               aria-label="Sign In"
             >
               🔑 {t('signIn')}
             </button>
           )}
+
+          {/* Mobile Navigation Toggle Button */}
+          <button
+            className="tool-btn mobile-menu-toggle-btn"
+            onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            aria-label="Toggle mobile menu"
+            style={{ display: 'none' }}
+          >
+            {mobileNavOpen ? '✕' : '☰'}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer Navigation */}
+      {mobileNavOpen && (
+        <div className="mobile-nav-drawer" style={{ background: '#fff', borderBottom: '1px solid var(--line)', padding: '12px 20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Link to="/learn" className={`btn ghost small ${active('/learn')}`} onClick={() => setMobileNavOpen(false)}>
+              📖 {t('navLearn')}
+            </Link>
+            <Link to="/play" className={`btn ghost small ${active('/play')}`} onClick={() => setMobileNavOpen(false)}>
+              🎮 {t('navPlay')}
+            </Link>
+            <Link to="/profile" className={`btn ghost small ${active('/profile')}`} onClick={() => setMobileNavOpen(false)}>
+              🏆 {t('navProfile')}
+            </Link>
+            <Link to="/about" className={`btn ghost small ${active('/about')}`} onClick={() => setMobileNavOpen(false)}>
+              ℹ️ {t('navAbout')}
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
 
 export function Footer() {
-  const { t } = useLang()
+  const { t, pick } = useLang()
   return (
     <footer className="site-footer">
       <div className="wrap">
-        <p>
-          Official sources:{' '}
-          <a href="https://legislative.gov.in/constitution-of-india/" target="_blank" rel="noopener noreferrer">legislative.gov.in</a>
-          {' · '}
-          <a href="https://www.indiacode.nic.in/" target="_blank" rel="noopener noreferrer">indiacode.nic.in</a>
-          {' · '}<Link to="/about">{t('navAbout')}</Link>
-        </p>
-        <p className="disclaimer">{t('disclaimer')}</p>
+        <div className="footer-top-row">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 20 }}>🇮🇳</span>
+            <strong style={{ color: 'var(--ink)' }}>Legal Sahayak</strong>
+            <span className="muted" style={{ fontSize: 12 }}>— {pick({ en: 'Civic & Constitutional Education for Young Citizens', hi: 'युवा नागरिकों के लिए संवैधानिक साक्षरता मंच' })}</span>
+          </div>
+
+          <div className="footer-links">
+            <Link to="/learn">{t('navLearn')}</Link>
+            <Link to="/play">{t('navPlay')}</Link>
+            <Link to="/profile">{t('navProfile')}</Link>
+            <Link to="/about">{t('navAbout')}</Link>
+          </div>
+        </div>
+
+        <div className="footer-disclaimer-text">
+          <p>
+            {pick({
+              en: 'Official primary sources: Legislative Department, Ministry of Law & Justice (legislative.gov.in) and India Code (indiacode.nic.in). Designed for educational awareness under Article 51A(h) of the Constitution of India.',
+              hi: 'आधिकारिक प्राथमिक स्रोत: विधायी विभाग, विधि एवं न्याय मंत्रालय (legislative.gov.in) और इंडिया कोड (indiacode.nic.in)। भारतीय संविधान के अनुच्छेद 51A(h) के तहत शैक्षिक जागरूकता हेतु निर्मित।'
+            })}
+          </p>
+          <p style={{ marginTop: 4, color: 'var(--ink-faint)' }}>
+            Smart India Hackathon 2026 · Problem Statement SIH1703 · Team TechGeeks
+          </p>
+        </div>
       </div>
     </footer>
   )
@@ -187,8 +250,8 @@ export function ListenButton({ text }) {
     speak(text, lang, () => setBusy(false))
   }
   return (
-    <button className="listen-btn" onClick={on}>
-      {busy ? t('stop') : t('listen')}
+    <button className="listen-btn" onClick={on} title="Read aloud">
+      {busy ? `⏹ ${t('stop')}` : `🔊 ${t('listen')}`}
     </button>
   )
 }

@@ -62,7 +62,6 @@ export default function Quiz({ focusConceptId }) {
       selected.push(...shuffle(remaining).slice(0, 8 - selected.length))
     }
     return shuffle(selected).map(shuffleOptions)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusConceptId, isChallenge, seed])
 
   const [idx, setIdx] = useState(0)
@@ -102,78 +101,52 @@ export default function Quiz({ focusConceptId }) {
     setCompletionResult(res)
   }
 
-  if (!q && !done) {
-    finishQuiz(correctCount)
-  }
-
-  const answer = (i) => {
+  const answer = (optionIndex) => {
     if (chosen !== null) return
-    setChosen(i)
-    const isCorrect = i === q.correctIndex
-    const newCorrect = isCorrect ? correctCount + 1 : correctCount
-    if (isCorrect) setCorrectCount(newCorrect)
-
-    const concept = concepts.find(c => c.id === q.conceptId)
-    if (concept && !covered.includes(concept.id)) setCovered(cs => [...cs, concept.id])
-  }
-
-  const next = () => {
-    setChosen(null)
-    if (idx + 1 >= session.length) {
-      finishQuiz(correctCount)
-    } else {
-      setIdx(i => i + 1)
+    setChosen(optionIndex)
+    const isRight = optionIndex === q.correctIndex
+    const nextCount = isRight ? correctCount + 1 : correctCount
+    if (isRight) setCorrectCount(nextCount)
+    if (q.conceptId && !covered.includes(q.conceptId)) {
+      setCovered(c => [...c, q.conceptId])
     }
   }
 
-  const gameHead = (
-    <div className="game-head">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <h2>
-          {isChallenge ? '⚡ ' : '🧠 '}
-          {pick({
-            en: isChallenge ? 'Constitution Challenge' : 'Quiz Challenge',
-            hi: isChallenge ? 'संविधान चुनौती' : 'प्रश्नोत्तरी चुनौती'
-          })}
-        </h2>
-        {isChallenge && (
-          <span className={`challenge-timer-pill ${timeLeft <= 15 ? 'warning' : ''}`}>
-            ⏱️ {timeLeft}s
-          </span>
-        )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span className="score-pill">
-          {pick({ en: 'Correct', hi: 'सही' })}: {correctCount} / {session.length}
-        </span>
-      </div>
-    </div>
-  )
+  const next = () => {
+    if (idx + 1 < session.length) {
+      setIdx(i => i + 1)
+      setChosen(null)
+    } else {
+      finishQuiz(correctCount)
+    }
+  }
 
+  const letters = ['A', 'B', 'C', 'D']
+
+  // Result View
   if (done) {
     const pct = completionResult?.pct ?? Math.round((correctCount / session.length) * 100)
     const xpEarned = completionResult?.xpEarned || 0
 
     return (
-      <div className="wrap game-shell">
-        {gameHead}
-        <div className="card center" style={{ padding: '34px 24px' }}>
-          <div className="quiz-done-icon">
+      <div className="wrap quiz-shell">
+        <div className="quiz-results-card">
+          <div style={{ fontSize: 52, marginBottom: 8 }}>
             {pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : '📖'}
           </div>
-          <h3 style={{ fontSize: 24, margin: '8px 0 4px' }}>{t('quizDone')}</h3>
-          <p className="muted" style={{ fontSize: 14 }}>
+          <h3>{t('quizDone')}</h3>
+          <p style={{ color: 'var(--ink-soft)', fontSize: 15, maxWidth: 520, margin: '0 auto 16px' }}>
             {pct >= 80
-              ? pick({ en: 'Outstanding constitutional insight!', hi: 'असाधारण संवैधानिक समझ!' })
+              ? pick({ en: 'Outstanding constitutional insight! You showed a firm grasp of civic principles.', hi: 'असाधारण संवैधानिक समझ! आपने नागरिक सिद्धांतों की मजबूत समझ प्रदर्शित की।' })
               : pct >= 60
-              ? pick({ en: 'Good effort! Keep learning and practicing.', hi: 'अच्छा प्रयास! सीखते और अभ्यास करते रहें।' })
-              : pick({ en: 'Review the lessons and try again to improve your score.', hi: 'अंक सुधारने के लिए पाठों की पुनरावृत्ति करें।' })}
+              ? pick({ en: 'Good effort! You understand key rights. Keep learning to master higher levels.', hi: 'अच्छा प्रयास! आप मुख्य अधिकारों को समझते हैं। उच्च स्तर तक पहुँचने के लिए सीखते रहें।' })
+              : pick({ en: 'Review the lessons and try again to improve your score and earn more XP.', hi: 'अंक सुधारने और अधिक XP पाने के लिए पाठों की पुनरावृत्ति करें।' })}
           </p>
 
           <div className="quiz-result-score-box">
             <div className="res-stat">
               <span className="res-num">{correctCount} / {session.length}</span>
-              <span className="res-lbl">{pick({ en: 'Correct Answers', hi: 'सही उत्तर' })}</span>
+              <span className="res-lbl">{pick({ en: 'Score', hi: 'सही उत्तर' })}</span>
             </div>
             <div className="res-divider" />
             <div className="res-stat">
@@ -183,39 +156,50 @@ export default function Quiz({ focusConceptId }) {
             <div className="res-divider" />
             <div className="res-stat highlight">
               <span className="res-num">+{xpEarned} XP</span>
-              <span className="res-lbl">{pick({ en: 'XP Earned', hi: 'XP अर्जित' })}</span>
+              <span className="res-lbl">{pick({ en: 'XP Awarded', hi: 'अर्जित XP' })}</span>
             </div>
           </div>
 
           {!completionResult?.isEligible && (
-            <div className="quiz-cap-notice">
+            <div style={{ background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e', padding: '10px 16px', borderRadius: 10, fontSize: 13, marginBottom: 20 }}>
               🛡️ {pick({
-                en: "Daily quiz XP cap reached (5 quizzes). You can keep practicing to learn and improve, but no further XP will be awarded until tomorrow.",
-                hi: "दैनिक क्विज़ XP सीमा पूर्ण (5 क्विज़)। आप सीखने और अभ्यास जारी रख सकते हैं, पर अतिरिक्त XP कल मिलेगा।"
+                en: "Daily quiz XP cap reached (5 scored quizzes today). You can keep practicing anytime for free, and fresh XP will be available tomorrow!",
+                hi: "दैनिक क्विज़ XP सीमा पूर्ण (आज 5 क्विज़)। आप कभी भी नि:शुल्क अभ्यास जारी रख सकते हैं, नया XP कल उपलब्ध होगा!"
               })}
             </div>
           )}
 
           {covered.length > 0 && (
-            <>
-              <p className="section-title" style={{ marginTop: 20 }}>{t('conceptsLearnt')}</p>
-              <div className="grid two" style={{ textAlign: 'left' }}>
+            <div style={{ marginTop: 24, textAlign: 'left' }}>
+              <h4 style={{ fontSize: 16, color: 'var(--ink)', marginBottom: 12 }}>
+                🔗 {t('conceptsLearnt')}
+              </h4>
+              <div className="concepts-grid-modern">
                 {covered.map(id => {
                   const c = concepts.find(x => x.id === id)
                   return c ? (
-                    <Link key={id} to={`/learn/${id}`} className="card concept-card">
-                      <span className="situation">“{pick(c.situation)}”</span>
-                      <span className="muted">{pick(c.title)}</span>
+                    <Link key={id} to={`/learn/${id}`} className="concept-card-modern" style={{ padding: 16 }}>
+                      <span className="concept-tag-pill" style={{ width: 'fit-content', marginBottom: 6 }}>
+                        {c.provisions && c.provisions[0] ? pick(c.provisions[0].label) : 'Article'}
+                      </span>
+                      <strong style={{ fontSize: 14.5, color: 'var(--ink)' }}>{pick(c.title)}</strong>
+                      <p style={{ fontSize: 13, color: 'var(--ink-soft)', fontStyle: 'italic', margin: '4px 0 0' }}>
+                        “{pick(c.situation)}”
+                      </p>
                     </Link>
                   ) : null
                 })}
               </div>
-            </>
+            </div>
           )}
 
-          <div className="game-actions" style={{ justifyContent: 'center', marginTop: 24 }}>
-            <button className="btn primary" onClick={() => window.location.reload()}>{t('playAgain')}</button>
-            <Link to="/play" className="btn ghost">{t('backHome')}</Link>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 28, flexWrap: 'wrap' }}>
+            <button className="btn primary" onClick={() => window.location.reload()}>
+              🔄 {t('playAgain')}
+            </button>
+            <Link to="/play" className="btn ghost">
+              🎮 {t('backHome')}
+            </Link>
           </div>
         </div>
       </div>
@@ -226,16 +210,48 @@ export default function Quiz({ focusConceptId }) {
   const opts = pick(q.options) || []
 
   return (
-    <div className="wrap game-shell">
-      {gameHead}
+    <div className="wrap quiz-shell">
+      {/* Top Header Bar */}
+      <div className="quiz-header-bar">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link to="/play" className="btn ghost small" style={{ padding: '4px 10px' }}>
+            ← {pick({ en: 'Games', hi: 'खेल' })}
+          </Link>
+          <span className="quiz-mode-pill">
+            {isChallenge ? '⚡ Timed Challenge' : '🧠 Situation Practice'}
+          </span>
+          {isChallenge && (
+            <span className={`challenge-timer-pill ${timeLeft <= 15 ? 'warning' : ''}`}>
+              ⏱️ {timeLeft}s
+            </span>
+          )}
+        </div>
 
-      {/* Mode Switcher Banner (if not focus concept) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="score-pill">
+            {pick({ en: 'Score', hi: 'अंक' })}: {correctCount} / {session.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Mode Switcher Banner */}
       {!focusConceptId && idx === 0 && chosen === null && (
-        <div className="quiz-mode-banner">
-          <span className="mode-desc">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          background: 'var(--card-soft)',
+          border: '1px solid var(--line)',
+          borderRadius: 12,
+          padding: '10px 16px',
+          marginBottom: 16,
+          flexWrap: 'wrap',
+          gap: 10
+        }}>
+          <span style={{ fontSize: 13.5, color: 'var(--ink-soft)' }}>
             {isChallenge
-              ? pick({ en: '⚡ Challenge Mode: 60-second timer active! Answer fast for Speed Learner badge.', hi: '⚡ चुनौती मोड: 60 सेकंड टाइमर सक्रिय! त्वरित उत्तर देकर बैज पाएँ।' })
-              : pick({ en: '🧠 Practice Mode: Untimed, thoughtful situation-based quiz.', hi: '🧠 अभ्यास मोड: समय-मुक्त विचारशील स्थिति-आधारित क्विज़।' })}
+              ? pick({ en: '⚡ 60s Challenge Active: Answer quickly to test your reflexes and unlock badges.', hi: '⚡ 60s चुनौती सक्रिय: त्वरित उत्तर दें और विशेष बैज पाएँ।' })
+              : pick({ en: '🧠 Standard Practice: Take your time to think through real-world situations.', hi: '🧠 मानक अभ्यास: वास्तविक स्थितियों पर विचारपूर्वक उत्तर दें।' })}
           </span>
           <button
             className="btn ghost small"
@@ -243,60 +259,97 @@ export default function Quiz({ focusConceptId }) {
             onClick={() => setIsChallenge(!isChallenge)}
           >
             {isChallenge
-              ? pick({ en: 'Switch to Standard Quiz', hi: 'सामान्य क्विज़ पर बदलें' })
+              ? pick({ en: 'Switch to Untimed Mode', hi: 'सामान्य मोड पर बदलें' })
               : pick({ en: '⚡ Try 60s Challenge Mode', hi: '⚡ 60s चुनौती मोड आजमाएँ' })}
           </button>
         </div>
       )}
 
-      <p className="muted" style={{ marginTop: 8 }}>
-        {t('question')} {idx + 1} / {session.length}
-        {q.difficulty && (
-          <span className="difficulty-tag" style={{ marginLeft: 10 }}>
-            {q.difficulty === 1
-              ? pick({ en: '🟢 Foundational', hi: '🟢 बुनियादी' })
-              : q.difficulty === 2
-              ? pick({ en: '🟡 Intermediate', hi: '🟡 मध्यम' })
-              : pick({ en: '🔴 Advanced', hi: '🔴 उन्नत' })}
+      {/* Question Card */}
+      <div className="quiz-question-card">
+        <div className="quiz-q-progress">
+          <span>
+            {t('question')} <strong>{idx + 1}</strong> / {session.length}
           </span>
-        )}
-      </p>
-
-      <p className="quiz-q">{pick(q.question)}</p>
-
-      <div className="options">
-        {opts.map((o, i) => {
-          let cls = 'option'
-          if (chosen !== null) {
-            if (i === q.correctIndex) cls += ' correct'
-            else if (i === chosen) cls += ' wrong'
-          }
-          return (
-            <button key={i} className={cls} onClick={() => answer(i)} disabled={chosen !== null}>
-              {pick(o)}
-            </button>
-          )
-        })}
-      </div>
-
-      {chosen !== null && (
-        <div className={`feedback ${chosen === q.correctIndex ? 'ok' : 'no'}`}>
-          <strong>{chosen === q.correctIndex ? `✅ ${t('correct')}` : `❌ ${t('notCorrect')}`}</strong>
-          <br />
-          {pick(q.learnMore)}
-          {concept && (
-            <span className="ref">
-              📜 {pick(concept.provisions[0]?.label)}
-              {concept.provisions[0]?.part ? ` · Part ${concept.provisions[0].part}` : ''} · <Link to={`/learn/${concept.id}`}>{t('learnMore')} →</Link>
+          {q.difficulty && (
+            <span style={{
+              fontSize: 11,
+              fontWeight: 800,
+              padding: '2px 8px',
+              borderRadius: 6,
+              background: q.difficulty === 1 ? '#e8f5ee' : q.difficulty === 2 ? '#fef3c7' : '#fee2e2',
+              color: q.difficulty === 1 ? '#15803d' : q.difficulty === 2 ? '#b45309' : '#b91c1c'
+            }}>
+              {q.difficulty === 1
+                ? pick({ en: '🟢 Foundational', hi: '🟢 बुनियादी' })
+                : q.difficulty === 2
+                ? pick({ en: '🟡 Intermediate', hi: '🟡 मध्यम' })
+                : pick({ en: '🔴 Advanced', hi: '🔴 कठिन' })}
             </span>
           )}
         </div>
-      )}
 
-      <div className="game-actions">
-        <button className="btn primary" onClick={next} disabled={chosen === null}>
-          {idx + 1 >= session.length ? t('seeResult') : t('next')}
-        </button>
+        <span className="quiz-q-context-tag">
+          {pick({ en: 'Real-Life Situation', hi: 'वास्तविक स्थिति' })}
+        </span>
+
+        <h3 className="quiz-q-text">
+          {pick(q.question)}
+        </h3>
+
+        {/* Options */}
+        <div className="quiz-options-list">
+          {opts.map((o, i) => {
+            let stateClass = ''
+            if (chosen !== null) {
+              if (i === q.correctIndex) stateClass = 'correct'
+              else if (i === chosen) stateClass = 'wrong'
+            }
+            return (
+              <button
+                key={i}
+                className={`quiz-option-btn ${stateClass}`}
+                onClick={() => answer(i)}
+                disabled={chosen !== null}
+              >
+                <span className="option-letter-badge">{letters[i]}</span>
+                <span style={{ flex: 1 }}>{pick(o)}</span>
+                {chosen !== null && i === q.correctIndex && <span style={{ color: 'var(--ok)', fontWeight: 800 }}>✓</span>}
+                {chosen !== null && i === chosen && i !== q.correctIndex && <span style={{ color: 'var(--danger)', fontWeight: 800 }}>✕</span>}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Feedback Rationale Box */}
+        {chosen !== null && (
+          <div className={`quiz-feedback-box ${chosen === q.correctIndex ? 'ok' : 'no'}`}>
+            <div className="feedback-status-line">
+              {chosen === q.correctIndex ? `✅ ${t('correct')}` : `❌ ${t('notCorrect')}`}
+            </div>
+            <p className="feedback-rationale-text">
+              {pick(q.learnMore)}
+            </p>
+            {concept && (
+              <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700 }}>
+                📜 {pick(concept.provisions[0]?.label)} · <Link to={`/learn/${concept.id}`} style={{ textDecoration: 'underline' }}>{t('learnMore')} →</Link>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Next Question CTA */}
+        <div style={{ marginTop: 22, display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            className="btn primary"
+            onClick={next}
+            disabled={chosen === null}
+          >
+            {idx + 1 >= session.length
+              ? pick({ en: 'See Final Results →', hi: 'परिणाम देखें →' })
+              : pick({ en: 'Next Question →', hi: 'अगला प्रश्न →' })}
+          </button>
+        </div>
       </div>
     </div>
   )
